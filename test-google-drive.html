@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Google Drive 圖片測試</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 50px auto;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        .container {
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        input {
+            width: 70%;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            margin-right: 10px;
+        }
+        button {
+            padding: 10px 20px;
+            background: #4285f4;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        button:hover {
+            background: #3367d6;
+        }
+        .test-results {
+            margin-top: 20px;
+            padding: 15px;
+            background: #f8f9fa;
+            border-radius: 5px;
+            min-height: 100px;
+        }
+        .test-images {
+            display: flex;
+            gap: 20px;
+            margin-top: 20px;
+            flex-wrap: wrap;
+        }
+        .image-item {
+            border: 1px solid #ddd;
+            padding: 10px;
+            border-radius: 5px;
+            text-align: center;
+            background: white;
+        }
+        .image-item img {
+            max-width: 200px;
+            max-height: 200px;
+            object-fit: contain;
+            border-radius: 5px;
+        }
+        .url-text {
+            font-family: monospace;
+            font-size: 10px;
+            color: #666;
+            word-break: break-all;
+            margin-top: 5px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Google Drive 圖片測試</h1>
+        <p>輸入您的 Google Drive 檔案 ID 來測試不同的 URL 格式：</p>
+        
+        <div>
+            <input type="text" id="fileId" placeholder="輸入 Google Drive 檔案 ID" value="1yxL8QTZmAF7PrJeMmnWXq5xfV_88u3jQ">
+            <button onclick="testImages()">測試圖片</button>
+        </div>
+        
+        <div class="test-results" id="results">
+            點擊測試按鈕來測試圖片載入...
+        </div>
+        
+        <div class="test-images" id="images">
+        </div>
+    </div>
+
+    <script>
+        function testImages() {
+            const fileId = document.getElementById('fileId').value.trim();
+            const resultsDiv = document.getElementById('results');
+            const imagesDiv = document.getElementById('images');
+            
+            if (!fileId) {
+                resultsDiv.innerHTML = '❌ 請輸入檔案 ID';
+                return;
+            }
+            
+            resultsDiv.innerHTML = '🔄 測試中...';
+            imagesDiv.innerHTML = '';
+            
+            const testUrls = [
+                {
+                    name: '縮圖格式 800x800',
+                    url: `https://drive.google.com/thumbnail?id=${fileId}&sz=w800-h800`
+                },
+                {
+                    name: '縮圖格式 400x400',
+                    url: `https://drive.google.com/thumbnail?id=${fileId}&sz=w400-h400`
+                },
+                {
+                    name: '縮圖格式 600x600',
+                    url: `https://drive.google.com/thumbnail?id=${fileId}&sz=w600-h600`
+                },
+                {
+                    name: 'export=view 格式',
+                    url: `https://drive.google.com/uc?export=view&id=${fileId}`
+                },
+                {
+                    name: '標準格式',
+                    url: `https://drive.google.com/uc?id=${fileId}`
+                }
+            ];
+            
+            let successCount = 0;
+            let completedCount = 0;
+            let results = [];
+            
+            testUrls.forEach((testUrl, index) => {
+                const img = new Image();
+                const imageDiv = document.createElement('div');
+                imageDiv.className = 'image-item';
+                imageDiv.innerHTML = `
+                    <div><strong>${testUrl.name}</strong></div>
+                    <div>載入中...</div>
+                    <div class="url-text">${testUrl.url}</div>
+                `;
+                imagesDiv.appendChild(imageDiv);
+                
+                img.onload = function() {
+                    successCount++;
+                    completedCount++;
+                    results[index] = `✅ ${testUrl.name}: 成功`;
+                    
+                    imageDiv.innerHTML = `
+                        <div><strong>${testUrl.name}</strong></div>
+                        <img src="${testUrl.url}" alt="測試圖片">
+                        <div style="color: green; margin-top: 5px;">✅ 載入成功</div>
+                        <div class="url-text">${testUrl.url}</div>
+                    `;
+                    
+                    updateResults();
+                };
+                
+                img.onerror = function() {
+                    completedCount++;
+                    results[index] = `❌ ${testUrl.name}: 失敗`;
+                    
+                    imageDiv.innerHTML = `
+                        <div><strong>${testUrl.name}</strong></div>
+                        <div style="color: red; margin-top: 5px;">❌ 載入失敗</div>
+                        <div class="url-text">${testUrl.url}</div>
+                    `;
+                    
+                    updateResults();
+                };
+                
+                img.src = testUrl.url;
+            });
+            
+            function updateResults() {
+                if (completedCount === testUrls.length) {
+                    let resultHtml = `<strong>測試完成！</strong><br>`;
+                    resultHtml += `成功: ${successCount}/${testUrls.length}<br><br>`;
+                    results.forEach(result => {
+                        resultHtml += result + '<br>';
+                    });
+                    
+                    if (successCount > 0) {
+                        resultHtml += '<br>🎉 至少有一種格式可以正常載入圖片！';
+                    } else {
+                        resultHtml += '<br>❌ 所有格式都無法載入。請檢查：<br>';
+                        resultHtml += '• 檔案 ID 是否正確<br>';
+                        resultHtml += '• Google Drive 檔案權限是否設為「知道連結的任何人都可檢視」<br>';
+                        resultHtml += '• 檔案是否為圖片格式';
+                    }
+                    
+                    resultsDiv.innerHTML = resultHtml;
+                }
+            }
+        }
+        
+        // 頁面載入時自動測試
+        window.onload = function() {
+            testImages();
+        };
+    </script>
+</body>
+</html>

@@ -1,0 +1,1056 @@
+{
+	"info": {
+		"_postman_id": "3f50443b-b4ed-4122-930a-c6a5b1fa9d08",
+		"name": "New Collection",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "44395271",
+		"_collection_link": "https://test55-3863.postman.co/workspace/test-Workspace~673b9bcd-e4f1-4172-82d5-12a069a1d4ed/collection/44395271-3f50443b-b4ed-4122-930a-c6a5b1fa9d08?action=share&source=collection_link&creator=44395271"
+	},
+	"item": [
+		{
+			"name": "{{base_url}}/member(會員列表)",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{baseURL}}/user/members",
+					"host": [
+						"{{baseURL}}"
+					],
+					"path": [
+						"user",
+						"members"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "{{base_url}}/member(註冊會員)",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status is 200 or 201\", () => pm.response.to.be.oneOf([200,201]));",
+							"const user = pm.response.json();",
+							"pm.expect(user.member_id).to.be.a(\"number\");",
+							"pm.environment.set(\"memberId\", user.member_id);"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"name\":\"tes724ss\",\n  \"password\":\"pa72466\",\n  \"phone\":\"097240999\",\n  \"address\":\"Ta724ei\",\n  \"email\":\"testuse724@gmail.com\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{baseURL}}/member",
+					"host": [
+						"{{baseURL}}"
+					],
+					"path": [
+						"member"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "{{base_url}}member/login(會員登入)",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"email\":  \"20250623test\",\n  \"password\": \"20250623test\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{baseURL}}/member/login",
+					"host": [
+						"{{baseURL}}"
+					],
+					"path": [
+						"member",
+						"login"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "{{base_url}}product(瀏覽商品列表)",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{baseURL}}/product",
+					"host": [
+						"{{baseURL}}"
+					],
+					"path": [
+						"product"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "{{base_url}}cart(商品正確加入購物車)",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Cart add → 200\", () => pm.response.to.have.status(200));"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"member_id\":124,\n    \"product_id\":13,\n    \"quantity\":2\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{baseURL}}/cart",
+					"host": [
+						"{{baseURL}}"
+					],
+					"path": [
+						"cart"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "{{base_url}}/cart(依會員編號查看購物車)",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{baseURL}}/cart?member_id=111",
+					"host": [
+						"{{baseURL}}"
+					],
+					"path": [
+						"cart"
+					],
+					"query": [
+						{
+							"key": "member_id",
+							"value": "111"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "{{base_url}}/cart(更新購物車商品數量)",
+			"request": {
+				"method": "PUT",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"member_id\": 50699,\n  \"product_id\": 3,\n  \"quantity\": 4\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{baseURL}}/cart",
+					"host": [
+						"{{baseURL}}"
+					],
+					"path": [
+						"cart"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "{{base_url}}/cart(會員移除購物車商品)",
+			"request": {
+				"method": "DELETE",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"member_id\":50690,\n    \"product_id\":6\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{baseURL}}/cart",
+					"host": [
+						"{{baseURL}}"
+					],
+					"path": [
+						"cart"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "{{base_url}}/order(會員下訂單)",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"member_id\":50716\n    //從購物車內撈資料(member_id)後加到order還有order_detail之後再把購物車內該筆資料刪除\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{baseURL}}/order",
+					"host": [
+						"{{baseURL}}"
+					],
+					"path": [
+						"order"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "{{base_url}}/user/members(管理員取得所有會員資料，或是依會員編號)",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "//取得所有會員資料，或是依會員編號",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{baseURL}}/user/members?member_id=50736",
+					"host": [
+						"{{baseURL}}"
+					],
+					"path": [
+						"user",
+						"members"
+					],
+					"query": [
+						{
+							"key": "member_id",
+							"value": "50736"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "{{base_url}}/user/members(管理員新增會員)",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"name\": \"foieujrj\",\n    \"password\": \"foieujrj\",\n    \"phone\": \"098790398\",\n    \"address\": \"foieujrj\",\n    \"create_at\": \"2025-05-03T16:24:00\",\n    \"email\":\"foieujrj@test.com\"\n    //管理員模式新增會員\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{baseURL}}/user/members",
+					"host": [
+						"{{baseURL}}"
+					],
+					"path": [
+						"user",
+						"members"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "{{base_url}}/user/members(管理員更新會員資料)",
+			"request": {
+				"method": "PUT",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"member_id\":\"50722\",\n    \"name\": \"0620_upd\",\n    \"password\": \"0620\",\n    \"phone\": \"0620_upd\",\n    \"address\": \"0620\",\n    \"email\":\"0620@test.com_upd\"\n    //管理員模式更新會員\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{baseURL}}/user/members",
+					"host": [
+						"{{baseURL}}"
+					],
+					"path": [
+						"user",
+						"members"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "{{base_url}}/user/members(管理員刪除會員)",
+			"request": {
+				"method": "DELETE",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"member_id\":3434\n    //\"name\": \"testUssss\",\n   // \"password\": \"pass666\",\n    //\"phone\": \"091200999\",\n    //\"address\": \"Taidoeei\",\n    //\"create_at\": \"2025-04-26 12:00:00\",\n    //\"email\":\"testuser@du8mple.com\"\n    //管理員模式刪除會員\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{baseURL}}/user/members",
+					"host": [
+						"{{baseURL}}"
+					],
+					"path": [
+						"user",
+						"members"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "{{base_url}}/user/categories(管理員讀取商品類別列表)",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "//管理員取得商品類別表",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{baseURL}}/user/categories",
+					"host": [
+						"{{baseURL}}"
+					],
+					"path": [
+						"user",
+						"categories"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "{{base_url}}/user/categories(管理員新增商品類別)",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"name\":\"0518\"\n    //管理員新增商品類別\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{baseURL}}/user/categories",
+					"host": [
+						"{{baseURL}}"
+					],
+					"path": [
+						"user",
+						"categories"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "{{base_url}}/user/categories(管理員更新商品類別)",
+			"request": {
+				"method": "PUT",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"category_id\":3,\n    \"name\":\"手錶_upd\"\n    //管理員更新商品類別\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{baseURL}}/user/categories",
+					"host": [
+						"{{baseURL}}"
+					],
+					"path": [
+						"user",
+						"categories"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "{{base_url}}/user/categories(管理員刪除商品類別)",
+			"request": {
+				"method": "DELETE",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"category_id\":24\n    //\"name\":\"TestCat\"\n    //管理員刪除商品類別\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{baseURL}}/user/categories",
+					"host": [
+						"{{baseURL}}"
+					],
+					"path": [
+						"user",
+						"categories"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "{{base_url}}/user/products(管理員讀取商品列表)",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "//管理員取得商品列表",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{baseURL}}/user/products",
+					"host": [
+						"{{baseURL}}"
+					],
+					"path": [
+						"user",
+						"products"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "{{base_url}}/user/products(管理員新增商品)",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"name\":\"超屌電視\",\n    \"price\":\"987\",\n    \"soh\":20,\n    \"category_id\":5\n    //管理員新增商品\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{baseURL}}/user/products",
+					"host": [
+						"{{baseURL}}"
+					],
+					"path": [
+						"user",
+						"products"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "{{base_url}}/user/products(管理員更新商品資訊)",
+			"request": {
+				"method": "PUT",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"name\":\"超屌電視_upd\",\n    \"price\":\"987\",\n    \"soh\":10,\n    \"category_id\":5,\n    \"is_active\":false,\n    \"product_id\":45\n    //管理員更新商品狀態或數量\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{baseURL}}/user/products",
+					"host": [
+						"{{baseURL}}"
+					],
+					"path": [
+						"user",
+						"products"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "{{base_url}}/user/products(管理員刪除商品)",
+			"request": {
+				"method": "DELETE",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"product_id\":28\n    //管理員刪除商品\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{baseURL}}/user/products",
+					"host": [
+						"{{baseURL}}"
+					],
+					"path": [
+						"user",
+						"products"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "{{base_url}}/user/orders(會員查詢自身訂單資料)",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "//查看全部訂單或依照會員編號查詢",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{baseURL}}/user/orders?member_id=30678",
+					"host": [
+						"{{baseURL}}"
+					],
+					"path": [
+						"user",
+						"orders"
+					],
+					"query": [
+						{
+							"key": "member_id",
+							"value": "30678"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "{{base_url}}/member(依照會員編號讀取資料)",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{baseURL}}/member?member_id=111",
+					"host": [
+						"{{baseURL}}"
+					],
+					"path": [
+						"member"
+					],
+					"query": [
+						{
+							"key": "member_id",
+							"value": "111"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "{{base_url}}/member(會員刪除自身帳號)",
+			"request": {
+				"method": "DELETE",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"member_id\":679\n    //會員刪除自身資料\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{baseURL}}/member",
+					"host": [
+						"{{baseURL}}"
+					],
+					"path": [
+						"member"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "{{base_url}}/user/users/login(管理員登入)",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"account\":123456,\n    \"password\":123456\n    //管理員登入\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{baseURL}}/user/users/login",
+					"host": [
+						"{{baseURL}}"
+					],
+					"path": [
+						"user",
+						"users",
+						"login"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "{{base_url}}/user/users(新增管理員)",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"name\":\"30678\",\n    \"password\":\"123456\",\n    \"account\":\"123456\",\n    \"level\":1\n    //新增管理員\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{baseURL}}/user/users",
+					"host": [
+						"{{baseURL}}"
+					],
+					"path": [
+						"user",
+						"users"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "{{base_url}}/user/users(更新管理員資料)",
+			"request": {
+				"method": "PUT",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": " {\n    \"userId\": 1,\n    \"name\": \"新的使用者姓名\",\n    \"password\": \"新密碼\",\n    \"account\": \"新帳號\",\n    \"level\": 2\n  }\n",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{baseURL}}/user/users",
+					"host": [
+						"{{baseURL}}"
+					],
+					"path": [
+						"user",
+						"users"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "{{base_url}}/user/users(刪除管理員)",
+			"request": {
+				"method": "DELETE",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"user_id\":6\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{baseURL}}/user/users",
+					"host": [
+						"{{baseURL}}"
+					],
+					"path": [
+						"user",
+						"users"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "{{base_url}}/member(會員修改資料)",
+			"request": {
+				"method": "PUT",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"member_id\": 30679,\n    \"name\": \"新姓名\",\n    \"password\": \"新密碼\",\n    \"phone\": \"新電話\",\n    \"address\": \"新地址\",\n    \"email\": \"new@email.com\"\n  }\n",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{baseURL}}/member",
+					"host": [
+						"{{baseURL}}"
+					],
+					"path": [
+						"member"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "{{base_url}}/user/carts(管理員查看購物車列表)",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{baseURL}}/user/carts",
+					"host": [
+						"{{baseURL}}"
+					],
+					"path": [
+						"user",
+						"carts"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "{{base_url}}/user/carts(管理員更新購物車資訊)",
+			"request": {
+				"method": "PUT",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"member_id\":124,\n    \"product_id\":14,\n    \"quantity\":3\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{baseURL}}/user/carts",
+					"host": [
+						"{{baseURL}}"
+					],
+					"path": [
+						"user",
+						"carts"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "{{base_url}}/user/carts(管理員刪除購物車)",
+			"request": {
+				"method": "DELETE",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"member_id\":124,\n    \"product_id\":14\n}   ",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{baseURL}}/user/carts",
+					"host": [
+						"{{baseURL}}"
+					],
+					"path": [
+						"user",
+						"carts"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "{{base_url}}/api/upload(上傳圖片API，使用form-data或binary)",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "file",
+					"file": {
+						"src": "/Users/changyu/Downloads/images.jpeg"
+					}
+				},
+				"url": {
+					"raw": "{{baseURL}}/api/upload",
+					"host": [
+						"{{baseURL}}"
+					],
+					"path": [
+						"api",
+						"upload"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "{{base_url}}/user/orders(刪除訂單)",
+			"request": {
+				"method": "DELETE",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"order_id\":82\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{baseURL}}/user/orders",
+					"host": [
+						"{{baseURL}}"
+					],
+					"path": [
+						"user",
+						"orders"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "{{base_url}}/user/orders(修改訂單)",
+			"request": {
+				"method": "PUT",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": " {\n    \"order_id\": 83,\n    \"member_id\": 50709,\n    \"create_at\": \"2025-06-20T21:28:00\",\n    \"orderDetails\": [\n      {\n        \"product_id\": 2,\n        \"quantity\": 5\n      }\n    ]\n  }\n",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{baseURL}}/user/orders",
+					"host": [
+						"{{baseURL}}"
+					],
+					"path": [
+						"user",
+						"orders"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "{{base_url}}/user/users(查詢所有管理員)",
+			"request": {
+				"auth": {
+					"type": "noauth"
+				},
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{baseURL}}/user/users",
+					"host": [
+						"{{baseURL}}"
+					],
+					"path": [
+						"user",
+						"users"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "{{base_url}}/user/orders(管理員查看訂單列表)",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{base_url}}/user/orders",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"user",
+						"orders"
+					]
+				}
+			},
+			"response": []
+		}
+	],
+	"variable": [
+		{
+			"key": "baseURL",
+			"value": "{{base_url}}",
+			"type": "default"
+		}
+	]
+}
