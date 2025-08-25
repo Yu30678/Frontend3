@@ -1,6 +1,7 @@
 export interface Product {
   product_id: number
   name: string
+  description?: string
   price: number  // 後端使用 BigDecimal
   soh: number    // 後端使用 soh (Stock On Hand) 而不是 stock
   category_id: number

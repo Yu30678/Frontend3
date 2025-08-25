@@ -8,10 +8,13 @@ export interface User {
 }
 
 export interface AdminUser {
-  userId: number
+  user_id: number
   name: string
   account: string
+  password?: string
   level: number
+  created_at?: string
+  updated_at?: string
 }
 
 export interface Member {
@@ -37,6 +40,7 @@ export interface AdminLoginRequest {
 
 export interface LoginResponse {
   status: number  // 後端回傳 status 而不是 success
+  success?: boolean
   message: string
   data?: User | Member | AdminUser
 }

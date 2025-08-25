@@ -169,7 +169,7 @@
 <script setup lang="ts">
 import { ref, watch } from 'vue'
 import { XMarkIcon } from '@heroicons/vue/24/outline'
-import { getProductImageUrl, getGoogleDriveImageUrls, isValidGoogleDriveFileId } from '@/utils/googleDrive'
+// import { getProductImageUrl } from '@/utils/googleDrive'
 import GoogleDriveImage from '@/components/common/GoogleDriveImage.vue'
 import type { Product, Category } from '@/types/product'
 
@@ -237,10 +237,6 @@ const handleSubmit = async () => {
   }
 }
 
-const getPreviewImageUrl = () => {
-  return getProductImageUrl({ image_id: form.value.image_id, image_url: form.value.image_url })
-}
-
 const testImageUrl = () => {
   imageTestResult.value = '🔄 測試中...'
   
@@ -286,9 +282,5 @@ const testImageUrl = () => {
   }
   
   testNextUrl()
-}
-
-const handleImageError = () => {
-  console.log('圖片載入失敗')
 }
 </script>
