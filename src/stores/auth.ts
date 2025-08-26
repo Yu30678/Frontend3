@@ -5,7 +5,7 @@ import { authService } from '@/services/auth'
 
 export const useAuthStore = defineStore('auth', () => {
   const user = ref<User | Member | AdminUser | null>(null)
-  const token = ref<string | null>(localStorage.getItem('token'))
+  const token = ref<string | null>(sessionStorage.getItem('token'))
   const isLoading = ref(false)
   const error = ref<string | null>(null)
 
@@ -95,8 +95,8 @@ export const useAuthStore = defineStore('auth', () => {
         // 生成簡單的token（實際應用中應由後端提供）
         const mockToken = `token-${Date.now()}-${Math.random()}`
         token.value = mockToken
-        localStorage.setItem('token', mockToken)
-        localStorage.setItem('user', JSON.stringify(response.data))
+        sessionStorage.setItem('token', mockToken)
+        sessionStorage.setItem('user', JSON.stringify(response.data))
       } else {
         throw new Error(response.message || '登入失敗')
       }
@@ -120,8 +120,8 @@ export const useAuthStore = defineStore('auth', () => {
         // 生成簡單的token
         const mockToken = `token-${Date.now()}-${Math.random()}`
         token.value = mockToken
-        localStorage.setItem('token', mockToken)
-        localStorage.setItem('user', JSON.stringify(response.data))
+        sessionStorage.setItem('token', mockToken)
+        sessionStorage.setItem('user', JSON.stringify(response.data))
       } else {
         throw new Error(response.message || '註冊失敗')
       }
@@ -136,14 +136,14 @@ export const useAuthStore = defineStore('auth', () => {
   const logout = () => {
     user.value = null
     token.value = null
-    localStorage.removeItem('token')
-    localStorage.removeItem('user')
+    sessionStorage.removeItem('token')
+    sessionStorage.removeItem('user')
     error.value = null
   }
 
   const initAuth = () => {
-    const savedToken = localStorage.getItem('token')
-    const savedUser = localStorage.getItem('user')
+    const savedToken = sessionStorage.getItem('token')
+    const savedUser = sessionStorage.getItem('user')
     
     if (savedToken && savedUser) {
       try {
