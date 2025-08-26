@@ -91,12 +91,19 @@ export const useAuthStore = defineStore('auth', () => {
       }
       
       if (response.status === 200 && response.data) {
-        user.value = response.data
         // 生成簡單的token（實際應用中應由後端提供）
         const mockToken = `token-${Date.now()}-${Math.random()}`
-        token.value = mockToken
+        
+        // 先更新 sessionStorage
         sessionStorage.setItem('token', mockToken)
         sessionStorage.setItem('user', JSON.stringify(response.data))
+        
+        // 然後更新 reactive refs，確保響應性觸發
+        token.value = mockToken
+        user.value = response.data
+        
+        // 強制觸發響應性更新
+        await new Promise(resolve => setTimeout(resolve, 0))
       } else {
         throw new Error(response.message || '登入失敗')
       }
@@ -116,12 +123,19 @@ export const useAuthStore = defineStore('auth', () => {
       const response = await authService.memberRegister(userData)
       
       if (response.status === 200 && response.data) {
-        user.value = response.data
         // 生成簡單的token
         const mockToken = `token-${Date.now()}-${Math.random()}`
-        token.value = mockToken
+        
+        // 先更新 sessionStorage
         sessionStorage.setItem('token', mockToken)
         sessionStorage.setItem('user', JSON.stringify(response.data))
+        
+        // 然後更新 reactive refs，確保響應性觸發
+        token.value = mockToken
+        user.value = response.data
+        
+        // 強制觸發響應性更新
+        await new Promise(resolve => setTimeout(resolve, 0))
       } else {
         throw new Error(response.message || '註冊失敗')
       }

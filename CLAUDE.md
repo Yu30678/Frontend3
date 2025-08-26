@@ -1,7 +1,7 @@
 # CLAUDE.md
 
 購物車專案
-
+一律以繁體中文回覆
 ## Project Overview
 後端以Java撰寫，HttpServer,Maven;前端使用Vue 3 + TypeScript + Vite
 這個專案分別有使用者,管理員功能
