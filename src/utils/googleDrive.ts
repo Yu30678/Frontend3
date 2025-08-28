@@ -12,7 +12,7 @@ const GOOGLE_DRIVE_FOLDER_ID = '1pyxs8UoPgQwfF14oLGTcIVnlYigYfqe3'
  * @returns 直接圖片URL
  */
 export function getGoogleDriveImageUrl(fileId: string): string {
-  if (!fileId) return '/placeholder-image.jpg'
+  if (!fileId) return '/placeholder-image.svg'
   
   // 根據測試結果，使用縮圖格式作為主要格式
   return `https://drive.google.com/thumbnail?id=${fileId}&sz=w800-h800`
@@ -25,7 +25,7 @@ export function getGoogleDriveImageUrl(fileId: string): string {
  * @returns 縮圖URL
  */
 export function getGoogleDriveThumbnailUrl(fileId: string, size: number = 200): string {
-  if (!fileId) return '/placeholder-image.jpg'
+  if (!fileId) return '/placeholder-image.svg'
   
   // Google Drive 縮圖URL格式
   return `https://drive.google.com/thumbnail?id=${fileId}&sz=s${size}`
@@ -37,7 +37,7 @@ export function getGoogleDriveThumbnailUrl(fileId: string, size: number = 200): 
  * @returns 多種可能的圖片URL格式
  */
 export function getGoogleDriveImageUrls(fileId: string): string[] {
-  if (!fileId) return ['/placeholder-image.jpg']
+  if (!fileId) return ['/placeholder-image.svg']
   
   return [
     `https://drive.google.com/uc?id=${fileId}`, // 標準格式
@@ -110,7 +110,7 @@ export function getProductImageUrl(product: { image_id?: string; image_url?: str
   }
   
   // 最後回退到預設圖片
-  return '/placeholder-image.jpg'
+  return '/placeholder-image.svg'
 }
 
 /**
@@ -150,5 +150,5 @@ export function getProductThumbnailUrl(product: { image_id?: string; image_url?:
   }
   
   // 最後回退到預設圖片
-  return '/placeholder-image.jpg'
+  return '/placeholder-image.svg'
 }

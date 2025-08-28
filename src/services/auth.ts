@@ -36,24 +36,14 @@ export const authService = {
 
   async memberRegister(userData: RegisterRequest): Promise<LoginResponse> {
     try {
+      // userData 已經有正確的 name 欄位，直接使用
       const response = await api.post('/member', userData)
       return response.data
     } catch (error: any) {
-      // 如果API調用失敗，使用模擬數據
-      console.warn('API調用失敗，使用模擬數據:', error.message)
-      
+      console.error('註冊API失敗:', error.message)
       return {
-        status: 200,
-        message: '註冊成功',
-        data: {
-          member_id: Date.now(),
-          name: userData.name,
-          email: userData.email,
-          phone: userData.phone,
-          address: userData.address,
-          password: '',
-          create_at: new Date().toISOString()
-        }
+        status: 500,
+        message: error.response?.data?.message || '註冊失敗，請稍後再試'
       }
     }
   },
@@ -146,33 +136,18 @@ export const authService = {
     }
   },
 
-  async deleteMemberAccount(): Promise<LoginResponse> {
+  async deleteMemberAccount(memberId: number): Promise<LoginResponse> {
     try {
-      const response = await api.delete('/member')
+      const response = await api.delete('/member', {
+        data: { member_id: memberId }
+      })
       return response.data
     } catch (error: any) {
       return {
         status: 500,
-        message: error.message || '刪除會員帳戶失敗'
+        message: error.response?.data?.message || '刪除會員帳戶失敗'
       }
     }
   },
 
-  async updatePassword(passwordData: { currentPassword: string; newPassword: string }): Promise<LoginResponse> {
-    try {
-      // 假設後端API接受這種格式
-      const response = await api.put('/member/password', {
-        currentPassword: passwordData.currentPassword,
-        newPassword: passwordData.newPassword
-      })
-      return response.data
-    } catch (error: any) {
-      console.warn('密碼更新API調用失敗:', error.message)
-      // 模擬成功回應
-      return {
-        status: 200,
-        message: '密碼更新成功'
-      }
-    }
-  }
 }

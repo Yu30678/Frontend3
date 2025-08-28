@@ -11,82 +11,6 @@
       </div>
     </div>
 
-    <!-- Filters -->
-    <div class="bg-white p-4 rounded-lg shadow mb-6">
-      <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
-        <div>
-          <label class="block text-sm font-medium text-gray-700 mb-1">
-            搜尋商品
-          </label>
-          <input
-            v-model="filters.search"
-            type="text"
-            placeholder="商品名稱..."
-            class="block w-full rounded-md border-gray-300 shadow-sm focus:border-primary-500 focus:ring-primary-500 sm:text-sm"
-            @input="debouncedSearch"
-          />
-        </div>
-        
-        <div>
-          <label class="block text-sm font-medium text-gray-700 mb-1">
-            商品分類
-          </label>
-          <select
-            v-model="filters.category"
-            class="block w-full rounded-md border-gray-300 shadow-sm focus:border-primary-500 focus:ring-primary-500 sm:text-sm"
-            @change="fetchProducts"
-          >
-            <option value="">所有分類</option>
-            <option v-for="category in categories" :key="category.category_id" :value="category.category_id">
-              {{ category.name }}
-            </option>
-          </select>
-        </div>
-        
-        <div>
-          <label class="block text-sm font-medium text-gray-700 mb-1">
-            價格範圍
-          </label>
-          <select
-            v-model="filters.priceRange"
-            class="block w-full rounded-md border-gray-300 shadow-sm focus:border-primary-500 focus:ring-primary-500 sm:text-sm"
-            @change="fetchProducts"
-          >
-            <option value="">不限價格</option>
-            <option value="0-100">$0 - $100</option>
-            <option value="100-500">$100 - $500</option>
-            <option value="500-1000">$500 - $1,000</option>
-            <option value="1000+">$1,000以上</option>
-          </select>
-        </div>
-        
-        <div>
-          <label class="block text-sm font-medium text-gray-700 mb-1">
-            排序方式
-          </label>
-          <select
-            v-model="filters.sortBy"
-            class="block w-full rounded-md border-gray-300 shadow-sm focus:border-primary-500 focus:ring-primary-500 sm:text-sm"
-            @change="fetchProducts"
-          >
-            <option value="">預設排序</option>
-            <option value="price_asc">價格：低到高</option>
-            <option value="price_desc">價格：高到低</option>
-            <option value="name_asc">名稱：A到Z</option>
-            <option value="created_desc">最新商品</option>
-          </select>
-        </div>
-      </div>
-      
-      <div class="mt-4 flex justify-end">
-        <button
-          @click="resetFilters"
-          class="px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500"
-        >
-          重設篩選
-        </button>
-      </div>
-    </div>
 
     <!-- Products Grid -->
     <div v-if="isLoading" class="flex justify-center items-center py-12">
@@ -270,14 +194,6 @@ const totalPages = computed(() => Math.ceil(totalItems.value / itemsPerPage.valu
 const isAddingToCart = ref<Record<number, boolean>>({})
 const showSuccessToast = ref(false)
 
-const filters = ref({
-  search: '',
-  category: '',
-  priceRange: '',
-  sortBy: ''
-})
-
-let searchTimeout: NodeJS.Timeout | null = null
 
 const visiblePages = computed(() => {
   const pages: number[] = []
@@ -300,12 +216,12 @@ const fetchProducts = async () => {
     isLoading.value = true
     const response = await productService.getProducts(
       currentPage.value,
-      itemsPerPage.value,
-      filters.value.category ? parseInt(filters.value.category) : undefined
+      itemsPerPage.value
     )
     
     if (response.status === 200 && response.data) {
-      products.value = response.data.filter(p => p.soh > 0 && p.is_active) // 只顯示有庫存且啟用的商品
+      // 直接使用返回的數據，不在前端再次過濾
+      products.value = response.data
       totalItems.value = response.pagination?.totalItems || response.data.length
     }
   } catch (error) {
@@ -326,26 +242,6 @@ const fetchCategories = async () => {
   }
 }
 
-const debouncedSearch = () => {
-  if (searchTimeout) {
-    clearTimeout(searchTimeout)
-  }
-  searchTimeout = setTimeout(() => {
-    currentPage.value = 1
-    fetchProducts()
-  }, 500)
-}
-
-const resetFilters = () => {
-  filters.value = {
-    search: '',
-    category: '',
-    priceRange: '',
-    sortBy: ''
-  }
-  currentPage.value = 1
-  fetchProducts()
-}
 
 const getCategoryName = (categoryId: number) => {
   const category = categories.value.find(c => c.category_id === categoryId)
@@ -374,11 +270,6 @@ const addToCart = async (product: Product) => {
   } finally {
     isAddingToCart.value[product.product_id] = false
   }
-}
-
-const handleImageError = (event: Event) => {
-  const img = event.target as HTMLImageElement
-  img.src = '/placeholder-image.jpg'
 }
 
 const prevPage = () => {

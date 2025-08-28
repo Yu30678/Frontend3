@@ -35,7 +35,7 @@
                   :disabled="!isEditing"
                   type="text"
                   required
-                  class="block w-full rounded-md border-gray-300 shadow-sm focus:border-primary-500 focus:ring-primary-500 sm:text-sm disabled:bg-gray-50 disabled:text-gray-500"
+                  class="block w-full rounded-md border-gray-300 shadow-sm focus:border-primary-500 focus:ring-primary-500 sm:text-sm disabled:bg-gray-50 disabled:text-gray-500 text-gray-900"
                 />
               </div>
 
@@ -48,7 +48,7 @@
                   :disabled="!isEditing"
                   type="email"
                   required
-                  class="block w-full rounded-md border-gray-300 shadow-sm focus:border-primary-500 focus:ring-primary-500 sm:text-sm disabled:bg-gray-50 disabled:text-gray-500"
+                  class="block w-full rounded-md border-gray-300 shadow-sm focus:border-primary-500 focus:ring-primary-500 sm:text-sm disabled:bg-gray-50 disabled:text-gray-500 text-gray-900"
                 />
               </div>
 
@@ -60,7 +60,7 @@
                   v-model="form.phone"
                   :disabled="!isEditing"
                   type="tel"
-                  class="block w-full rounded-md border-gray-300 shadow-sm focus:border-primary-500 focus:ring-primary-500 sm:text-sm disabled:bg-gray-50 disabled:text-gray-500"
+                  class="block w-full rounded-md border-gray-300 shadow-sm focus:border-primary-500 focus:ring-primary-500 sm:text-sm disabled:bg-gray-50 disabled:text-gray-500 text-gray-900"
                 />
               </div>
 
@@ -85,8 +85,22 @@
                 v-model="form.address"
                 :disabled="!isEditing"
                 rows="3"
-                class="block w-full rounded-md border-gray-300 shadow-sm focus:border-primary-500 focus:ring-primary-500 sm:text-sm disabled:bg-gray-50 disabled:text-gray-500"
+                class="block w-full rounded-md border-gray-300 shadow-sm focus:border-primary-500 focus:ring-primary-500 sm:text-sm disabled:bg-gray-50 disabled:text-gray-500 text-gray-900"
                 placeholder="請輸入您的地址"
+              />
+            </div>
+
+            <!-- 當編輯基本資料時，需要輸入密碼以驗證身份 -->
+            <div v-if="isEditing">
+              <label class="block text-sm font-medium text-gray-700 mb-1">
+                請輸入當前密碼以確認變更
+              </label>
+              <input
+                v-model="form.currentPassword"
+                type="password"
+                required
+                placeholder="請輸入當前密碼"
+                class="block w-full rounded-md border-gray-300 shadow-sm focus:border-primary-500 focus:ring-primary-500 sm:text-sm text-gray-900"
               />
             </div>
 
@@ -148,7 +162,7 @@
                 v-model="passwordForm.currentPassword"
                 type="password"
                 required
-                class="block w-full rounded-md border-gray-300 shadow-sm focus:border-primary-500 focus:ring-primary-500 sm:text-sm"
+                class="block w-full rounded-md border-gray-300 shadow-sm focus:border-primary-500 focus:ring-primary-500 sm:text-sm text-gray-900"
               />
             </div>
 
@@ -161,7 +175,7 @@
                 type="password"
                 required
                 minlength="6"
-                class="block w-full rounded-md border-gray-300 shadow-sm focus:border-primary-500 focus:ring-primary-500 sm:text-sm"
+                class="block w-full rounded-md border-gray-300 shadow-sm focus:border-primary-500 focus:ring-primary-500 sm:text-sm text-gray-900"
               />
             </div>
 
@@ -174,7 +188,7 @@
                 type="password"
                 required
                 minlength="6"
-                class="block w-full rounded-md border-gray-300 shadow-sm focus:border-primary-500 focus:ring-primary-500 sm:text-sm"
+                class="block w-full rounded-md border-gray-300 shadow-sm focus:border-primary-500 focus:ring-primary-500 sm:text-sm text-gray-900"
               />
             </div>
 
@@ -288,14 +302,16 @@ const form = ref({
   username: '',
   email: '',
   phone: '',
-  address: ''
+  address: '',
+  currentPassword: ''
 })
 
 const originalForm = ref({
   username: '',
   email: '',
   phone: '',
-  address: ''
+  address: '',
+  currentPassword: ''
 })
 
 const passwordForm = ref({
@@ -323,7 +339,8 @@ const loadProfile = async () => {
         username: memberProfile.value.name || '', // 使用 name 而不是 username
         email: memberProfile.value.email,
         phone: memberProfile.value.phone || '',
-        address: memberProfile.value.address || ''
+        address: memberProfile.value.address || '',
+        currentPassword: '' // 始終為空
       }
       originalForm.value = { ...form.value }
     } else {
@@ -342,19 +359,45 @@ const startEditing = () => {
 const cancelEditing = () => {
   isEditing.value = false
   form.value = { ...originalForm.value }
+  // 清空密碼欄位
+  form.value.currentPassword = ''
 }
 
 const handleSubmit = async () => {
   try {
     isLoading.value = true
-    const response = await authService.updateMemberProfile(form.value)
     
-    if (response.success) {
-      originalForm.value = { ...form.value }
-      isEditing.value = false
-      showMessage('個人資料更新成功', 'success')
+    if (memberProfile.value) {
+      const updateData = {
+        member_id: memberProfile.value.member_id,
+        name: form.value.username, // 將username映射為name
+        email: form.value.email,
+        phone: form.value.phone,
+        address: form.value.address,
+        password: form.value.currentPassword // 使用用戶輸入的當前密碼
+      }
+      
+      const response = await authService.updateMemberProfile(updateData)
+      
+      if (response.status === 200) {
+        // 更新成功後同步更新本地顯示資料
+        memberProfile.value.name = form.value.username
+        memberProfile.value.email = form.value.email
+        memberProfile.value.phone = form.value.phone || ''
+        memberProfile.value.address = form.value.address || ''
+        
+        originalForm.value = { ...form.value }
+        // 清空密碼欄位
+        form.value.currentPassword = ''
+        originalForm.value.currentPassword = ''
+        
+        isEditing.value = false
+        showMessage('個人資料更新成功', 'success')
+      } else {
+        throw new Error(response.message || '更新個人資料失敗')
+      }
     } else {
-      throw new Error(response.message)
+      throw new Error('無法取得用戶資料')
     }
   } catch (error: any) {
     console.error('更新個人資料失敗:', error)
@@ -391,16 +434,25 @@ const handlePasswordSubmit = async () => {
   try {
     isChangingPasswordLoading.value = true
     
-    const response = await authService.updatePassword({
-      currentPassword: passwordForm.value.currentPassword,
-      newPassword: passwordForm.value.newPassword
-    })
-    
-    if (response.status === 200) {
-      cancelPasswordChange()
-      showMessage('密碼更新成功', 'success')
+    // 使用當前用戶的完整資料來更新密碼
+    if (memberProfile.value) {
+      const response = await authService.updateMemberProfile({
+        member_id: memberProfile.value.member_id,
+        name: memberProfile.value.name,
+        email: memberProfile.value.email,
+        phone: memberProfile.value.phone || '',
+        address: memberProfile.value.address || '',
+        password: passwordForm.value.newPassword // 只有密碼是新的
+      })
+      
+      if (response.status === 200) {
+        cancelPasswordChange()
+        showMessage('密碼更新成功', 'success')
+      } else {
+        throw new Error(response.message || '密碼更新失敗')
+      }
     } else {
-      throw new Error(response.message || '密碼更新失敗')
+      throw new Error('無法取得用戶資料')
     }
   } catch (error: any) {
     console.error('密碼更新失敗:', error)
@@ -425,15 +477,19 @@ const cancelDeleteAccount = () => {
 
 const handleDeleteAccount = async () => {
   try {
-    const response = await authService.deleteMemberAccount()
-    if (response.success) {
-      showMessage('帳戶已刪除', 'success')
-      setTimeout(() => {
-        authStore.logout()
-        router.push('/')
-      }, 2000)
+    if (memberProfile.value) {
+      const response = await authService.deleteMemberAccount(memberProfile.value.member_id)
+      if (response.status === 200) {
+        showMessage('帳戶已刪除', 'success')
+        setTimeout(() => {
+          authStore.logout()
+          router.push('/')
+        }, 2000)
+      } else {
+        throw new Error(response.message || '刪除帳戶失敗')
+      }
     } else {
-      throw new Error(response.message)
+      throw new Error('無法取得用戶資料')
     }
   } catch (error: any) {
     console.error('刪除帳戶失敗:', error)

@@ -12,6 +12,40 @@
 import { ref, computed, watch, onMounted } from 'vue'
 import { getGoogleDriveImageUrls, getProductImageUrl } from '@/utils/googleDrive'
 
+// 全域請求限制器，避免同時發送太多請求
+class RequestLimiter {
+  private requestQueue: Array<() => void> = []
+  private isProcessing = false
+  private readonly minDelay = 500 // 最小延遲500ms
+  
+  async addRequest(requestFn: () => void) {
+    return new Promise<void>((resolve) => {
+      this.requestQueue.push(() => {
+        requestFn()
+        resolve()
+      })
+      this.processQueue()
+    })
+  }
+  
+  private async processQueue() {
+    if (this.isProcessing || this.requestQueue.length === 0) return
+    
+    this.isProcessing = true
+    while (this.requestQueue.length > 0) {
+      const requestFn = this.requestQueue.shift()
+      if (requestFn) {
+        requestFn()
+        // 每個請求間隔至少500ms
+        await new Promise(resolve => setTimeout(resolve, this.minDelay))
+      }
+    }
+    this.isProcessing = false
+  }
+}
+
+const globalLimiter = new RequestLimiter()
+
 interface Props {
   product?: { image_id?: string; image_url?: string }
   imageId?: string
@@ -22,7 +56,7 @@ interface Props {
 
 const props = withDefaults(defineProps<Props>(), {
   alt: '商品圖片',
-  fallbackUrl: '/placeholder-image.jpg',
+  fallbackUrl: '/placeholder-image.svg',
   class: ''
 })
 
@@ -30,24 +64,21 @@ const currentUrlIndex = ref(0)
 const hasError = ref(false)
 const isLoading = ref(true)
 
-// 獲取所有可能的圖片URL - 根據測試結果，Google Drive 縮圖格式可以正常工作
+// 獲取所有可能的圖片URL - 減少同時請求數量以避免429錯誤
 const imageUrls = computed(() => {
   const urls: string[] = []
   
   // 如果有傳入 imageId prop
   if (props.imageId) {
-    urls.push(...getGoogleDriveImageUrls(props.imageId))
+    // 只使用縮圖格式，減少URL數量
+    urls.push(`https://drive.google.com/thumbnail?id=${props.imageId}&sz=w400-h400`)
   }
   
   // 如果有傳入 product 物件
   if (props.product) {
     if (props.product.image_id) {
-      // 基於測試結果，使用有效的縮圖格式
-      urls.push(
-        `https://drive.google.com/thumbnail?id=${props.product.image_id}&sz=w800-h800`,
-        `https://drive.google.com/thumbnail?id=${props.product.image_id}&sz=w400-h400`,
-        `https://drive.google.com/thumbnail?id=${props.product.image_id}&sz=w600-h600`
-      )
+      // 只使用一個尺寸的縮圖，減少請求數量
+      urls.push(`https://drive.google.com/thumbnail?id=${props.product.image_id}&sz=w400-h400`)
     }
     if (props.product.image_url) {
       urls.push(props.product.image_url)
@@ -73,7 +104,8 @@ const imageClass = computed(() => {
 })
 
 // 圖片載入錯誤處理
-const handleImageError = () => {
+const handleImageError = async (event: Event) => {
+  const img = event.target as HTMLImageElement
   console.warn(`圖片載入失敗: ${currentImageUrl.value}`)
   
   // 如果還有其他URL可以嘗試
@@ -81,17 +113,19 @@ const handleImageError = () => {
     currentUrlIndex.value++
     console.info(`嘗試下一個URL: ${imageUrls.value[currentUrlIndex.value]}`)
     
-    // 如果是429錯誤，增加延遲
+    // 如果是Google Drive URL，使用請求限制器
     if (currentImageUrl.value.includes('drive.google.com')) {
-      setTimeout(() => {
-        // 觸發重新載入
-        const img = new Image()
+      await globalLimiter.addRequest(() => {
         img.src = imageUrls.value[currentUrlIndex.value]
-      }, Math.random() * 2000 + 1000) // 1-3秒隨機延遲
+      })
+    } else {
+      // 非Google Drive URL立即載入
+      img.src = imageUrls.value[currentUrlIndex.value]
     }
   } else {
-    // 所有URL都失敗了
+    // 所有URL都失敗了，使用fallback
     hasError.value = true
+    img.src = props.fallbackUrl
     console.error('所有圖片URL都載入失敗，使用預設圖片')
   }
   isLoading.value = false

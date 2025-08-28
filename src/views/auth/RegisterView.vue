@@ -19,10 +19,10 @@
         <div class="mt-1">
           <input
             id="username"
-            v-model="form.username"
+            v-model="form.name"
             type="text"
             required
-            class="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md placeholder-gray-400 focus:outline-none focus:ring-primary-500 focus:border-primary-500"
+            class="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md placeholder-gray-400 focus:outline-none focus:ring-primary-500 focus:border-primary-500 text-gray-900"
           />
         </div>
       </div>
@@ -37,7 +37,7 @@
             v-model="form.email"
             type="email"
             required
-            class="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md placeholder-gray-400 focus:outline-none focus:ring-primary-500 focus:border-primary-500"
+            class="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md placeholder-gray-400 focus:outline-none focus:ring-primary-500 focus:border-primary-500 text-gray-900"
           />
         </div>
       </div>
@@ -52,7 +52,7 @@
             v-model="form.password"
             type="password"
             required
-            class="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md placeholder-gray-400 focus:outline-none focus:ring-primary-500 focus:border-primary-500"
+            class="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md placeholder-gray-400 focus:outline-none focus:ring-primary-500 focus:border-primary-500 text-gray-900"
           />
         </div>
       </div>
@@ -66,7 +66,7 @@
             id="phone"
             v-model="form.phone"
             type="tel"
-            class="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md placeholder-gray-400 focus:outline-none focus:ring-primary-500 focus:border-primary-500"
+            class="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md placeholder-gray-400 focus:outline-none focus:ring-primary-500 focus:border-primary-500 text-gray-900"
           />
         </div>
       </div>
@@ -80,7 +80,7 @@
             id="address"
             v-model="form.address"
             rows="3"
-            class="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md placeholder-gray-400 focus:outline-none focus:ring-primary-500 focus:border-primary-500"
+            class="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md placeholder-gray-400 focus:outline-none focus:ring-primary-500 focus:border-primary-500 text-gray-900"
           />
         </div>
       </div>
@@ -124,7 +124,7 @@ const router = useRouter()
 const authStore = useAuthStore()
 
 const form = ref<RegisterRequest>({
-  username: '',
+  name: '',
   password: '',
   email: '',
   phone: '',
@@ -134,7 +134,8 @@ const form = ref<RegisterRequest>({
 const handleSubmit = async () => {
   try {
     await authStore.register(form.value)
-    router.push('/user')
+    // 註冊成功後跳轉到登入頁面
+    router.push('/auth/login')
   } catch (error) {
     console.error('註冊失敗:', error)
   }

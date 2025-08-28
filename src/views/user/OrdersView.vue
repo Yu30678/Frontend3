@@ -6,53 +6,6 @@
       <p class="mt-1 text-sm text-gray-600">查看您的訂單歷史和狀態</p>
     </div>
 
-    <!-- Filters -->
-    <div class="bg-white p-4 rounded-lg shadow mb-6">
-      <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-        <div>
-          <label class="block text-sm font-medium text-gray-700 mb-1">
-            訂單狀態
-          </label>
-          <select
-            v-model="filters.status"
-            class="block w-full rounded-md border-gray-300 shadow-sm focus:border-primary-500 focus:ring-primary-500 sm:text-sm"
-            @change="fetchOrders"
-          >
-            <option value="">所有狀態</option>
-            <option value="pending">待處理</option>
-            <option value="processing">處理中</option>
-            <option value="shipped">已出貨</option>
-            <option value="delivered">已送達</option>
-            <option value="cancelled">已取消</option>
-          </select>
-        </div>
-        
-        <div>
-          <label class="block text-sm font-medium text-gray-700 mb-1">
-            日期範圍
-          </label>
-          <select
-            v-model="filters.dateRange"
-            class="block w-full rounded-md border-gray-300 shadow-sm focus:border-primary-500 focus:ring-primary-500 sm:text-sm"
-            @change="fetchOrders"
-          >
-            <option value="">全部時間</option>
-            <option value="7days">最近7天</option>
-            <option value="30days">最近30天</option>
-            <option value="90days">最近90天</option>
-          </select>
-        </div>
-        
-        <div class="flex items-end">
-          <button
-            @click="resetFilters"
-            class="w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500"
-          >
-            重設篩選
-          </button>
-        </div>
-      </div>
-    </div>
 
     <!-- Orders List -->
     <div v-if="isLoading" class="flex justify-center items-center py-12">
@@ -117,11 +70,10 @@
                 :key="`${item.order_id}-${item.product_id}`"
                 class="flex items-center py-3 border-b border-gray-100 last:border-b-0"
               >
-                <img
+                <GoogleDriveImage
+                  :product="item.product"
+                  :alt="item.product?.name || '商品圖片'"
                   class="h-12 w-12 rounded object-cover object-center"
-                  :src="item.product ? `https://picsum.photos/100/100?random=${item.product.product_id}` : '/placeholder-image.jpg'"
-                  :alt="item.product?.name"
-                  @error="handleImageError"
                 />
                 <div class="ml-4 flex-1">
                   <h5 class="text-sm font-medium text-gray-900">
@@ -206,6 +158,7 @@ import { orderService } from '@/services/order'
 import { productService } from '@/services/product'
 import { useAuthStore } from '@/stores/auth'
 import { getProductImageUrl } from '@/utils/googleDrive'
+import GoogleDriveImage from '@/components/common/GoogleDriveImage.vue'
 import type { Order, Product } from '@/types/product'
 
 const isLoading = ref(true)
@@ -214,10 +167,6 @@ const expandedOrders = ref<number[]>([])
 const orderDetails = ref<Record<number, Order>>({})
 const isCancelling = ref<Record<number, boolean>>({})
 
-const filters = ref({
-  status: '',
-  dateRange: ''
-})
 
 const message = ref({
   show: false,
@@ -357,7 +306,7 @@ const toggleOrderDetails = async (order: Order) => {
                   price: detail.price,
                   soh: 0,
                   category_id: 1,
-                  image_url: '/placeholder-image.jpg',
+                  image_id: '1mNWrY6BLLZFxMpZGGJOGUJhzWa-oGx5a',
                   is_active: true
                 }
                 console.log(`⚠️ 使用備用商品資訊 ${detail.product_id}`)
@@ -399,7 +348,7 @@ const toggleOrderDetails = async (order: Order) => {
                   price: 99.50,
                   soh: 10,
                   category_id: 1,
-                  image_url: 'https://picsum.photos/300/300?random=1',
+                  image_id: '1mNWrY6BLLZFxMpZGGJOGUJhzWa-oGx5a',
                   is_active: true
                 }
               },
@@ -414,7 +363,7 @@ const toggleOrderDetails = async (order: Order) => {
                   price: 50.00,
                   soh: 5,
                   category_id: 2,
-                  image_url: 'https://picsum.photos/300/300?random=4',
+                  image_id: '1xCJvPX-KNsovAYUE0Xk_u_IhVGrIJ5Yx',
                   is_active: true
                 }
               }
@@ -454,14 +403,6 @@ const cancelOrder = async (order: Order) => {
   } finally {
     isCancelling.value[order.order_id] = false
   }
-}
-
-const resetFilters = () => {
-  filters.value = {
-    status: '',
-    dateRange: ''
-  }
-  fetchOrders()
 }
 
 const getStatusColor = (status: string) => {
@@ -510,11 +451,6 @@ const formatDate = (dateString: string) => {
     console.error('📅 日期格式化錯誤:', error)
     return '無效日期'
   }
-}
-
-const handleImageError = (event: Event) => {
-  const img = event.target as HTMLImageElement
-  img.src = '/placeholder-image.jpg'
 }
 
 const showMessage = (text: string, type: 'success' | 'error') => {
