@@ -57,14 +57,21 @@ export const authService = {
       // 處理真實API回傳的數據結構
       if (response.data && response.data.status === 200 && response.data.data) {
         const adminData = response.data.data
-        console.log('管理員數據:', adminData)
+        console.log('原始管理員API數據:', adminData)
         
-        // 確保數據結構正確，如果沒有level欄位，設置默認值
+        // 確保數據結構正確，轉換為符合 AdminUser 類型的格式
         const processedData = {
-          ...adminData,
+          user_id: adminData.user_id || adminData.id,
+          name: adminData.name || adminData.username,
+          account: adminData.account,
           level: adminData.level !== undefined ? adminData.level : 1, // 確保有level欄位，但不會把0當作falsy
-          role: 'admin' // 添加role欄位以兼容前端邏輯
+          role: 'admin', // 添加role欄位以兼容前端邏輯
+          password: null, // 不返回密碼
+          created_at: adminData.created_at,
+          updated_at: adminData.updated_at
         }
+        
+        console.log('處理後的管理員數據:', processedData)
         
         return {
           status: 200,
@@ -82,7 +89,8 @@ export const authService = {
         { account: 'admin', level: 0, name: '超級管理員' },
         { account: 'admin1', level: 1, name: '高級管理員' },
         { account: 'admin2', level: 2, name: '中階管理員' },
-        { account: 'admin3', level: 3, name: '一般管理員' }
+        { account: 'admin3', level: 3, name: '一般管理員' },
+        { account: 'yuu2', level: 0, name: 'yuu2', user_id: 2 } // 新增資料庫中的管理員帳號
       ]
       
       const testAdmin = testAdmins.find(admin => admin.account === credentials.account)
@@ -92,14 +100,14 @@ export const authService = {
           status: 200,
           message: '管理員登入成功',
           data: {
-            id: testAdmin.level + 1,
-            username: testAdmin.account,
-            email: `${testAdmin.account}@system.local`,
-            role: 'admin',
-            level: testAdmin.level,
+            user_id: (testAdmin as any).user_id || (testAdmin.level + 1),
             name: testAdmin.name,
-            createdAt: '2024-01-01T00:00:00',
-            updatedAt: '2024-01-01T00:00:00'
+            account: testAdmin.account,
+            level: testAdmin.level,
+            role: 'admin',
+            password: null, // 不返回密碼
+            created_at: '2024-01-01T00:00:00',
+            updated_at: '2024-01-01T00:00:00'
           }
         }
       } else {
