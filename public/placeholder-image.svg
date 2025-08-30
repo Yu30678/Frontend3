@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="400" height="400" viewBox="0 0 400 400" fill="none">
+  <rect width="400" height="400" fill="#f3f4f6"/>
+  <rect x="140" y="140" width="120" height="120" rx="8" fill="#d1d5db"/>
+  <path d="m160 170 20 20 20-20v40l-20 20-20-20v-40z" fill="#9ca3af"/>
+  <circle cx="190" cy="160" r="3" fill="#9ca3af"/>
+  <text x="200" y="320" font-family="Arial, sans-serif" font-size="16" fill="#6b7280" text-anchor="middle">商品圖片</text>
+</svg>
