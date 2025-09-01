@@ -133,9 +133,12 @@ const form = ref<RegisterRequest>({
 
 const handleSubmit = async () => {
   try {
-    await authStore.register(form.value)
-    // 註冊成功後跳轉到登入頁面
-    router.push('/auth/login')
+    const response = await authStore.register(form.value)
+    if (response && response.status === 200) {
+      // 顯示成功訊息並跳轉到登入頁面
+      alert('註冊成功！請使用您的帳號密碼登入。')
+      router.push('/auth/login')
+    }
   } catch (error) {
     console.error('註冊失敗:', error)
   }

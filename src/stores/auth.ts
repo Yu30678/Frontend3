@@ -122,20 +122,10 @@ export const useAuthStore = defineStore('auth', () => {
       
       const response = await authService.memberRegister(userData)
       
-      if (response.status === 200 && response.data) {
-        // 生成簡單的token
-        const mockToken = `token-${Date.now()}-${Math.random()}`
-        
-        // 先更新 sessionStorage
-        sessionStorage.setItem('token', mockToken)
-        sessionStorage.setItem('user', JSON.stringify(response.data))
-        
-        // 然後更新 reactive refs，確保響應性觸發
-        token.value = mockToken
-        user.value = response.data
-        
-        // 強制觸發響應性更新
-        await new Promise(resolve => setTimeout(resolve, 0))
+      if (response.status === 200) {
+        // 註冊成功，但不自動登入
+        // 不設定 token 和 user，讓使用者手動登入
+        return response
       } else {
         throw new Error(response.message || '註冊失敗')
       }
