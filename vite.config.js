@@ -20,6 +20,12 @@ export default defineConfig({
   },
   server: {
     port: 3000,
-    host: true
+    host: true,
+    proxy: {
+      '/s3': {
+        target: 'http://localhost:8080',
+        changeOrigin: true,
+      }
+    }
   }
 })

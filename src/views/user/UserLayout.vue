@@ -26,6 +26,15 @@
               >
                 商品列表
               </router-link>
+              <router-link
+                to="/user/minio"
+                class="inline-flex items-center px-1 pt-1 text-sm font-medium"
+                :class="$route.name === 'UserMiniO'
+                  ? 'border-primary-500 text-gray-900 border-b-2'
+                  : 'border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700'"
+              >
+                MiniO
+              </router-link>
             </nav>
           </div>
           
